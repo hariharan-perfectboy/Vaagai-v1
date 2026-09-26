@@ -1,0 +1,18 @@
+const tasks=[
+  {name:"Python — Functions & OOP",area:"Python",plan:"60 min",status:"Done",confidence:"High"},
+  {name:"DSA — Arrays & Hashing",area:"DSA",plan:"60 min",status:"In Progress",confidence:"Medium"},
+  {name:"SQL — Joins & Aggregations",area:"SQL",plan:"45 min",status:"Not Started",confidence:"Medium"},
+  {name:"ML — Evaluation Revision",area:"Machine Learning",plan:"45 min",status:"Missed",confidence:"Low"},
+  {name:"Technical — Explain your PLC-IoT project",area:"Interview",plan:"30 min",status:"Not Started",confidence:"Medium"},
+];
+const skills=[["Python",72],["DSA",55],["Machine Learning",61],["Deep Learning",43],["GenAI",38],["SQL / DBMS",74],["OS / Networks",49],["Git",67],["Projects",70]];
+let role="user";
+function demoLogin(r){role=r;document.getElementById("loginView").classList.add("hidden");document.getElementById("appView").classList.remove("hidden");document.getElementById("roleBadge").textContent=r==="admin"?"ADMIN":"STUDENT";document.getElementById("settingsRole").textContent=r==="admin"?"Admin":"Student";document.getElementById("avatar").textContent=r==="admin"?"A":"H";if(r==="admin") document.querySelector(".hero h1").textContent="Good morning, Admin.";renderTasks();renderSkills();document.getElementById("today").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric",year:"numeric"});drawChart()}
+function logout(){location.reload()}
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>{document.querySelectorAll("#nav a").forEach(x=>x.classList.remove("active"));a.classList.add("active");document.querySelectorAll(".page").forEach(p=>p.classList.remove("active-page"));document.getElementById(a.dataset.page).classList.add("active-page");document.getElementById("pageTitle").textContent=a.querySelector("span").textContent})})})
+function renderTasks(){document.getElementById("taskTable").innerHTML=tasks.map((t,i)=>`<tr><td><b>${t.name}</b></td><td>${t.area}</td><td>${t.plan}</td><td><span class="pill ${t.status==="Done"?"green":t.status==="Missed"?"red":t.status==="In Progress"?"orange":"yellow"}">${t.status}</span></td><td>${t.confidence}</td><td><button class="secondary" onclick="completeTask(${i})">${t.status==="Done"?"Completed":"Update"}</button></td></tr>`).join("")}
+function completeTask(i){tasks[i].status="Done";renderTasks();alert("Saved in demo mode. Connect Supabase for cloud persistence.")}
+function addTask(){tasks.push({name:"New study task",area:"Custom",plan:"30 min",status:"Not Started",confidence:"Medium"});renderTasks()}
+function renderSkills(){document.getElementById("skillGrid").innerHTML=skills.map(s=>`<div class="skill-card"><h3>${s[0]}</h3><div class="pct">${s[1]}%</div><div class="bar"><i style="width:${s[1]}%"></i></div><small>Next: practice → explain → test</small></div>`).join("")}
+function drawChart(){const c=document.getElementById("skillChart");if(!c||!window.Chart)return;new Chart(c,{type:"bar",data:{labels:skills.map(x=>x[0]),datasets:[{label:"Completion %",data:skills.map(x=>x[1]),borderWidth:0,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:"#eef1f5"}},x:{grid:{display:false}}}}})}
+function markRecovered(btn){btn.closest(".recovery-item").style.opacity=".45";btn.textContent="Queued";}

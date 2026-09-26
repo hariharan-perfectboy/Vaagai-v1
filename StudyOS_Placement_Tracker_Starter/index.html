@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StudyOS — Placement Command Center</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div id="loginView" class="login-screen">
+    <div class="login-brand"><div class="brand-mark">S</div><div><b>StudyOS</b><span>Placement Command Center</span></div></div>
+    <div class="login-card">
+      <div class="eyebrow">SECURE WORKSPACE</div>
+      <h1>Build your placement readiness.</h1>
+      <p>Professional study execution, progress tracking and recovery — in one workspace.</p>
+      <label>Email<input id="email" type="email" placeholder="you@example.com"></label>
+      <label>Password<input id="password" type="password" placeholder="••••••••"></label>
+      <button class="primary" onclick="demoLogin('user')">Sign in as Student</button>
+      <button class="secondary" onclick="demoLogin('admin')">Preview Admin</button>
+      <small>Demo mode is enabled. Connect Supabase in <code>config.js</code> for real accounts.</small>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">S</div><div><b>StudyOS</b><span>Placement Command Center</span></div></div>
+      <div class="workspace">WORKSPACE <span id="roleBadge">STUDENT</span></div>
+      <nav id="nav">
+        <a class="active" data-page="overview">⌂ <span>Command Center</span></a>
+        <a data-page="daily">✓ <span>Daily Execution</span></a>
+        <a data-page="skills">◈ <span>Skill Progress</span></a>
+        <a data-page="recovery">! <span>Recovery Queue</span></a>
+        <a data-page="weekly">▦ <span>Weekly Push</span></a>
+        <a data-page="resources">↗ <span>Resources</span></a>
+        <a data-page="settings">⚙ <span>Settings</span></a>
+      </nav>
+      <div class="sidebar-bottom"><button onclick="logout()">Sign out</button></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div><span class="crumb">Placement /</span> <b id="pageTitle">Command Center</b></div><div class="top-actions"><span class="online">● Cloud ready</span><div class="avatar" id="avatar">H</div></div></header>
+
+      <section id="overview" class="page active-page">
+        <div class="hero"><div><div class="eyebrow">90-DAY EXECUTION SYSTEM</div><h1>Good morning, Hariharan.</h1><p>Focus on today's work. Recover missed tasks before adding optional study.</p></div><div class="hero-date" id="today"></div></div>
+        <div class="kpis">
+          <div class="kpi"><span>Overall readiness</span><strong id="overall">67%</strong><small>↑ 8% this month</small></div>
+          <div class="kpi"><span>Today's completion</span><strong id="todayPct">62%</strong><small>5 of 8 tasks</small></div>
+          <div class="kpi"><span>Recovery items</span><strong class="danger">3</strong><small>Needs attention</small></div>
+          <div class="kpi"><span>Study hours</span><strong>18.5h</strong><small>This week</small></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><div class="panel-head"><div><h2>Readiness by skill</h2><p>Current completion across your core placement stack.</p></div></div><div class="chart-box"><canvas id="skillChart"></canvas></div></div>
+          <div class="panel"><div class="panel-head"><div><h2>Today's mission</h2><p>Complete in this order.</p></div></div><div class="mission"><div class="mission-row done"><i>✓</i><div><b>Python — Functions & OOP</b><small>Learn + 10 practice problems</small></div><em>Done</em></div><div class="mission-row"><i>2</i><div><b>DSA — Arrays & Hashing</b><small>45 min practice + explain 2 patterns</small></div><em>60 min</em></div><div class="mission-row"><i>3</i><div><b>SQL — Joins & Aggregations</b><small>20 queries + timed test</small></div><em>45 min</em></div><div class="mission-row danger-row"><i>!</i><div><b>Recovery — Missed ML revision</b><small>Finish before optional study</small></div><em>Priority</em></div></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h2>Placement pipeline</h2><p>Keep your preparation aligned to the hiring journey.</p></div></div><div class="pipeline"><span class="active">Foundation</span><i>→</i><span class="active">Coding</span><i>→</i><span class="active">Technical</span><i>→</i><span>Projects</span><i>→</i><span>Interview</span></div></div>
+      </section>
+
+      <section id="daily" class="page"><div class="section-title"><div><div class="eyebrow">EXECUTION</div><h1>Daily Execution</h1><p>Track actual work, not just intentions.</p></div><button class="primary" onclick="addTask()">+ Add task</button></div><div class="panel"><div class="table-wrap"><table><thead><tr><th>Task</th><th>Area</th><th>Planned</th><th>Status</th><th>Confidence</th><th>Action</th></tr></thead><tbody id="taskTable"></tbody></table></div></div></section>
+
+      <section id="skills" class="page"><div class="section-title"><div><div class="eyebrow">READINESS</div><h1>Skill Progress</h1><p>Move from Learn → Practice → Explain → Test → Revise → Prove.</p></div></div><div class="skill-grid" id="skillGrid"></div></section>
+
+      <section id="recovery" class="page"><div class="section-title"><div><div class="eyebrow">ESCALATION</div><h1>Recovery Queue</h1><p>Red means recover the work — not failure.</p></div></div><div class="alert-box">Rule: finish high-priority missed work before adding optional new study.</div><div class="panel"><div class="recovery-item"><span class="status-dot red"></span><div><b>ML — Model Evaluation Revision</b><small>Due yesterday · 45 minutes</small></div><button class="primary" onclick="markRecovered(this)">Recover</button></div><div class="recovery-item"><span class="status-dot red"></span><div><b>DSA — Sliding Window Test</b><small>Due 2 days ago · 30 minutes</small></div><button class="primary" onclick="markRecovered(this)">Recover</button></div><div class="recovery-item"><span class="status-dot orange"></span><div><b>GenAI — Embeddings Notes</b><small>Due today · 30 minutes</small></div><button class="secondary" onclick="markRecovered(this)">Start</button></div></div></section>
+
+      <section id="weekly" class="page"><div class="section-title"><div><div class="eyebrow">WEEKLY CONTROL</div><h1>Weekly Push</h1><p>Review → recover → reset → execute.</p></div></div><div class="kpis"><div class="kpi"><span>Planned</span><strong>22h</strong></div><div class="kpi"><span>Actual</span><strong>18.5h</strong></div><div class="kpi"><span>Completed</span><strong>34</strong></div><div class="kpi"><span>Missed</span><strong class="danger">4</strong></div></div><div class="panel"><h2>Next week focus</h2><div class="focus-list"><b>1.</b> DSA arrays + hashing <b>2.</b> ML evaluation <b>3.</b> SQL timed practice <b>4.</b> Technical interview explanations</div></div></section>
+
+      <section id="resources" class="page"><div class="section-title"><div><div class="eyebrow">KNOWLEDGE HUB</div><h1>Resources</h1><p>Keep learning material connected to the execution plan.</p></div></div><div class="resource-grid"><div class="resource"><span>PY</span><b>Python Practice</b><small>Concepts, problems and proof tasks</small></div><div class="resource"><span>DS</span><b>DSA Patterns</b><small>Arrays, strings, hashing, trees, graphs</small></div><div class="resource"><span>ML</span><b>Machine Learning</b><small>Preprocessing, models, evaluation</small></div><div class="resource"><span>AI</span><b>GenAI</b><small>Embeddings, RAG, agents and evaluation</small></div></div></section>
+
+      <section id="settings" class="page"><div class="section-title"><div><div class="eyebrow">ACCOUNT</div><h1>Settings</h1><p>Application configuration and future cloud connection.</p></div></div><div class="panel settings"><h2>Account</h2><p><b>Role:</b> <span id="settingsRole">Student</span></p><p><b>Data mode:</b> Demo/local preview</p><div class="alert-box">For production: connect Supabase Auth + PostgreSQL. Your code remains in GitHub; progress remains in the cloud database.</div></div></section>
+    </main>
+  </div>
+</body>
+</html>
